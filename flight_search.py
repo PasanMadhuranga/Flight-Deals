@@ -1,14 +1,22 @@
+import time
+
 from amadeus import Client, ResponseError
 from datetime import timedelta, date
+from flight_data import FlightData
+
+ORIGIN_CITY = "LON"
+
 
 class FlightSearch:
     def __init__(self, amadeus_client, ):
         self.amadeus = amadeus_client
 
-    def is_flight_available(self):
-        """Check if there is a flight available below the lowest price."""
+    def all_flights_available(self, iata_and_price: list) -> list:
+        """Return a list of FlightData objects."""
+
         def dates() -> list:
             """return a list of all the dates from today to six months ahead."""
+
             def daterange(date1, date2):
                 for n in range(int((date2 - date1).days) + 1):
                     yield date1 + timedelta(n)
@@ -17,6 +25,7 @@ class FlightSearch:
             current_month = date.today().month
             current_day = date.today().day
 
+            # Get the month and the year after six months.
             if current_month + 6 > 12:
                 end_month = current_month - 6
                 end_year = current_year + 1
@@ -32,26 +41,28 @@ class FlightSearch:
 
             return six_months_dates
 
+        # Get all the dates from today to six months ahead.
         all_dates = dates()
 
-        for date in all_dates:
-            try:
-                '''
-                Returns price metrics of a given itinerary
-                '''
-                response = self.amadeus.analytics.itinerary_price_metrics.get(originIataCode="LON",
-                                                                         destinationIataCode='CDG',
-                                                                         departureDate=date)
-                print(response.data)
-            except ResponseError as error:
-                raise error
+        # Find whether there are flights that are lower than the lowest price.
+        available_flights = []
+        for destination in iata_and_price:
+            # for check_date in all_dates:
+                    try:
+                        response = self.amadeus.shopping.flight_dates.get(origin='MAD', destination='MUC')
+                        print(response.data)
+                    except ResponseError as error:
+                        raise error
 
-
-
-
-
-
-
+                    # try:
+                    #     available_lowest_price = float(response.data["data"][0]["priceMetrics"][0]["amount"])
+                    # except:
+                    #     pass
+                    # else:
+                    #     if available_lowest_price < destination[1]:
+                    #         flight = FlightData(ORIGIN_CITY, destination[0], date, available_lowest_price)
+                    #         available_flights.append(flight)
+        return available_flights
 
 
 

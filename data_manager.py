@@ -51,3 +51,12 @@ class DataManager:
 
         iata_codes = get_IATA_codes(get_city_names())
         update_sheet(iata_codes)
+
+
+
+    def code_and_price(self) -> list:
+        """Return a list of IATA code and the lowest price in a tuple"""
+        get_rows_endpoint = "https://api.sheety.co/d9b6498affde17f134d087d65eb61e1d/flightDeals/prices"
+        response = requests.get(url=get_rows_endpoint)
+        rows = response.json()["prices"]
+        return [(row["iataCode"], row["lowestPrice"]) for row in rows]

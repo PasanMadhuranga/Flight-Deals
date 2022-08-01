@@ -10,4 +10,7 @@ amadeus_client = Client(client_id=API_KEY, client_secret=API_SECRET)
 data_manager = DataManager(amadeus_client)
 flight_search = FlightSearch(amadeus_client)
 
-data_manager.add_IATA_codes()
+# data_manager.add_IATA_codes()
+iata_and_price = data_manager.code_and_price()
+available_flights_objects = flight_search.all_flights_available(iata_and_price)
+print(available_flights_objects)
