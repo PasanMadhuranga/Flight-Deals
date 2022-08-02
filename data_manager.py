@@ -54,9 +54,10 @@ class DataManager:
 
 
 
-    def code_and_price(self) -> list:
-        """Return a list of IATA code and the lowest price in a tuple"""
+    def get_rows(self) -> list:
+        """Return all the rows in the spread sheet as a list of dictionaries."""
         get_rows_endpoint = "https://api.sheety.co/d9b6498affde17f134d087d65eb61e1d/flightDeals/prices"
         response = requests.get(url=get_rows_endpoint)
         rows = response.json()["prices"]
-        return [(row["iataCode"], row["lowestPrice"]) for row in rows]
+        return rows
+        # return [(row["iataCode"], row["lowestPrice"]) for row in rows]
