@@ -10,8 +10,10 @@ ORIGIN_CITY = "London"
 TEQUILA_API_KEY = "HcHDQ-0lzJRWUQn3_M3DLwQeSYuBePfb"
 
 class FlightSearch:
-    def __init__(self, amadeus_client, ):
-        self.amadeus = amadeus_client
+    def __init__(self):
+        self.headers = {
+            "apikey": TEQUILA_API_KEY
+        }
 
     def all_flights_available(self, rows: list) -> list:
         """Return a list of available flights as FlightData objects."""
@@ -30,9 +32,6 @@ class FlightSearch:
         from_date = date(current_year, current_month, current_day)
         to_date = date(end_year, end_month, current_day)
 
-        headers = {
-            "apikey": TEQUILA_API_KEY
-        }
         flight_search_end_point = "https://tequila-api.kiwi.com/v2/search"
         available_flights = []
         for row in rows:
@@ -45,7 +44,7 @@ class FlightSearch:
                 "price_to": row["lowestPrice"] + 50,
             }
 
-            response = requests.get(url=flight_search_end_point, params=parameters, headers=headers)
+            response = requests.get(url=flight_search_end_point, params=parameters, headers=self.headers)
             flights_data = response.json()["data"]
             # print(f"flights data: {flights_data}")
             if flights_data:
